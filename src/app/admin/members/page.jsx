@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { getGroupMembers, deleteGroupMember } from '@/lib/groupApi';
 import { PLACEHOLDER_GROUP_ID } from '@/lib/placeholderGroup';
 import ErrorBanner from '@/components/wishlist/ErrorBanner';
+import AuthGuard from '@/components/AuthGuard';
 
 export default function AdminMembersPage() {
   const [members, setMembers] = useState([]);
@@ -46,6 +47,7 @@ export default function AdminMembersPage() {
   }
 
   return (
+    <AuthGuard>
     <main className="mx-auto max-w-2xl px-4 py-8 space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-red-800 dark:text-red-200">Delete Users</h1>
@@ -101,5 +103,6 @@ export default function AdminMembersPage() {
         </ul>
       )}
     </main>
+    </AuthGuard>
   );
 }

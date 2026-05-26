@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { logout } from '@/lib/authApi';
 
-export default function Navbar({ userId, role }) {
+export default function Navbar() {
+  const { user, setUser } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
@@ -19,6 +22,17 @@ export default function Navbar({ userId, role }) {
   function handleNavClick(href) {
     closeMenu();
     router.push(href);
+  }
+
+  async function handleLogout() {
+    closeMenu();
+    try {
+      await logout();
+    } catch {
+      // best-effort; clear local state regardless
+    }
+    setUser(null);
+    router.push('/login');
   }
 
   return (
@@ -106,7 +120,7 @@ export default function Navbar({ userId, role }) {
               <ul className="border-l-2 border-amber-400 ml-5">
                 <li>
                   <button
-                    onClick={() => handleNavClick('/wishlists/' + userId)}
+                    onClick={() => handleNavClick('/wishlists/' + user?._id)}
                     className="w-full text-left px-4 py-2.5 text-sm font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-zinc-800 transition-colors"
                   >
                     My Wishlist
@@ -141,7 +155,7 @@ export default function Navbar({ userId, role }) {
           </li>
 
           {/* Admin accordion — only for admins */}
-          {role === 'admin' && (
+          {user?.role === 'admin' && (
             <li>
               <button
                 onClick={() => setAdminOpen((open) => !open)}
@@ -190,9 +204,17 @@ export default function Navbar({ userId, role }) {
           )}
         </ul>
 
-        {/* Footer identity hint */}
-        <div className="px-5 py-4 border-t border-zinc-200 dark:border-zinc-700">
-          <p className="text-xs text-zinc-400 truncate">User: {userId}</p>
+        {/* Footer: user identity + logout */}
+        <div className="px-5 py-4 border-t border-zinc-200 dark:border-zinc-700 flex flex-col gap-2">
+          <p className="text-xs text-zinc-400 truncate">{user?.displayName ?? 'Guest'}</p>
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-red-50 dark:hover:bg-zinc-800 text-sm font-medium py-1.5 transition-colors"
+            >
+              Log out
+            </button>
+          )}
         </div>
       </nav>
     </>

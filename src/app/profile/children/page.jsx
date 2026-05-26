@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { addChild } from '@/lib/userApi';
-import { PLACEHOLDER_USER_ID } from '@/lib/placeholderUser';
 import ErrorBanner from '@/components/wishlist/ErrorBanner';
+import AuthGuard from '@/components/AuthGuard';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ChildrenPage() {
+  const { user } = useAuth();
   const [children, setChildren] = useState([]);
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,7 +21,7 @@ export default function ChildrenPage() {
     try {
       const body = { displayName };
       if (email.trim()) body.email = email.trim();
-      const newChild = await addChild(PLACEHOLDER_USER_ID, body);
+      const newChild = await addChild(user?._id, body);
       setChildren((prev) => [...prev, newChild]);
       setDisplayName('');
       setEmail('');
@@ -31,6 +33,7 @@ export default function ChildrenPage() {
   }
 
   return (
+    <AuthGuard>
     <main className="mx-auto max-w-md px-4 py-8 space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-red-800 dark:text-red-200">Add Children</h1>
@@ -95,5 +98,6 @@ export default function ChildrenPage() {
         </section>
       )}
     </main>
+    </AuthGuard>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { drawNames, getDrawResults } from '@/lib/groupApi';
 import { PLACEHOLDER_GROUP_ID } from '@/lib/placeholderGroup';
 import ErrorBanner from '@/components/wishlist/ErrorBanner';
+import AuthGuard from '@/components/AuthGuard';
 
 export default function AdminDrawPage() {
   const [assignments, setAssignments] = useState(null);
@@ -45,6 +46,7 @@ export default function AdminDrawPage() {
   }
 
   return (
+    <AuthGuard>
     <main className="mx-auto max-w-2xl px-4 py-8 space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-red-800 dark:text-red-200">Name Drawing</h1>
@@ -103,5 +105,6 @@ export default function AdminDrawPage() {
         </p>
       ) : null}
     </main>
+    </AuthGuard>
   );
 }

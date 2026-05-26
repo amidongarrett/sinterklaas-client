@@ -13,6 +13,7 @@ import {
 import AddItemForm from '@/components/wishlist/AddItemForm';
 import WishlistItemList from '@/components/wishlist/WishlistItemList';
 import ErrorBanner from '@/components/wishlist/ErrorBanner';
+import AuthGuard from '@/components/AuthGuard';
 
 export default function WishlistPage({ params }) {
   const { userId } = use(params);
@@ -111,6 +112,7 @@ export default function WishlistPage({ params }) {
   }
 
   return (
+    <AuthGuard>
     <main className="mx-auto max-w-2xl px-4 py-8 space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-amber-900">Wishlist</h1>
@@ -140,5 +142,6 @@ export default function WishlistPage({ params }) {
         />
       )}
     </main>
+    </AuthGuard>
   );
 }
