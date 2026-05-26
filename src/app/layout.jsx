@@ -1,4 +1,5 @@
 import { Inter, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "@/components/nav/Navbar";
 import { PLACEHOLDER_USER_ID } from "@/lib/placeholderUser";
@@ -26,7 +27,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col pt-16">
         <Navbar userId={PLACEHOLDER_USER_ID} role="admin" />
-        {children}
+        <Suspense fallback={null}>{children}</Suspense>
       </body>
     </html>
   );
