@@ -55,7 +55,7 @@ export default function AddItemForm({ onAdd, submitting }) {
             if (nameError) setNameError(null);
           }}
           placeholder="e.g. Chocolate letter"
-          className="w-full rounded border border-amber-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+          className="w-full rounded border border-amber-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
         {nameError && <p className="mt-1 text-xs text-red-600">{nameError}</p>}
       </div>
@@ -70,7 +70,7 @@ export default function AddItemForm({ onAdd, submitting }) {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Any details or preferences..."
           rows={2}
-          className="w-full rounded border border-amber-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+          className="w-full rounded border border-amber-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
       </div>
 
@@ -84,7 +84,7 @@ export default function AddItemForm({ onAdd, submitting }) {
           onChange={(e) => setLinksRaw(e.target.value)}
           placeholder="https://..."
           rows={2}
-          className="w-full rounded border border-amber-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+          className="w-full rounded border border-amber-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
       </div>
 
