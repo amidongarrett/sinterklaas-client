@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { inviteGroupMember } from '@/lib/groupApi';
 import { PLACEHOLDER_GROUP_ID } from '@/lib/placeholderGroup';
 import ErrorBanner from '@/components/wishlist/ErrorBanner';
+import AuthGuard from '@/components/AuthGuard';
 
 export default function AdminInvitePage() {
   const [inviteUrl, setInviteUrl] = useState(null);
@@ -36,6 +37,7 @@ export default function AdminInvitePage() {
   }
 
   return (
+    <AuthGuard>
     <main className="mx-auto max-w-md px-4 py-8 space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-red-800 dark:text-red-200">Invite Users</h1>
@@ -74,5 +76,6 @@ export default function AdminInvitePage() {
         </div>
       )}
     </main>
+    </AuthGuard>
   );
 }

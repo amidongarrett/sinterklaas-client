@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getGroupMembers } from '@/lib/groupApi';
 import { PLACEHOLDER_GROUP_ID } from '@/lib/placeholderGroup';
 import ErrorBanner from '@/components/wishlist/ErrorBanner';
+import AuthGuard from '@/components/AuthGuard';
 
 function SkeletonCard() {
   return (
@@ -41,6 +42,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
+    <AuthGuard>
     <main className="mx-auto max-w-5xl px-4 py-8">
       <header className="mb-6 space-y-1">
         <h1 className="text-2xl font-bold text-red-800 dark:text-red-200">Group Dashboard</h1>
@@ -87,5 +89,6 @@ export default function DashboardPage() {
         </div>
       )}
     </main>
+    </AuthGuard>
   );
 }

@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { getPartner, invitePartner, unlinkPartner } from '@/lib/userApi';
-import { PLACEHOLDER_USER_ID } from '@/lib/placeholderUser';
 import ErrorBanner from '@/components/wishlist/ErrorBanner';
+import AuthGuard from '@/components/AuthGuard';
+import { useAuth } from '@/context/AuthContext';
 
 export default function PartnerPage() {
+  const { user } = useAuth();
   const [partner, setPartner] = useState(undefined); // undefined = loading, null = none
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,7 +18,7 @@ export default function PartnerPage() {
   function fetchPartner() {
     setLoading(true);
     setError(null);
-    getPartner(PLACEHOLDER_USER_ID)
+    getPartner(user?._id)
       .then((data) => setPartner(data ?? null))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -32,7 +34,7 @@ export default function PartnerPage() {
     setError(null);
     setSuccess(null);
     try {
-      await invitePartner(PLACEHOLDER_USER_ID, inviteEmail);
+      await invitePartner(user?._id, inviteEmail);
       setInviteEmail('');
       setSuccess('Partner invitation sent.');
       fetchPartner();
@@ -48,7 +50,7 @@ export default function PartnerPage() {
     setError(null);
     setSuccess(null);
     try {
-      await unlinkPartner(PLACEHOLDER_USER_ID);
+      await unlinkPartner(user?._id);
       setSuccess('Partner unlinked.');
       fetchPartner();
     } catch (err) {
@@ -59,6 +61,7 @@ export default function PartnerPage() {
   }
 
   return (
+    <AuthGuard>
     <main className="mx-auto max-w-md px-4 py-8 space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-red-800 dark:text-red-200">Partner</h1>
@@ -118,5 +121,6 @@ export default function PartnerPage() {
         </form>
       )}
     </main>
+    </AuthGuard>
   );
 }

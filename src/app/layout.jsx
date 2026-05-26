@@ -2,7 +2,7 @@ import { Inter, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "@/components/nav/Navbar";
-import { PLACEHOLDER_USER_ID } from "@/lib/placeholderUser";
+import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,8 +26,10 @@ export default function RootLayout({ children }) {
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col pt-16">
-        <Navbar userId={PLACEHOLDER_USER_ID} role="admin" />
-        <Suspense fallback={null}>{children}</Suspense>
+        <AuthProvider>
+          <Navbar />
+          <Suspense fallback={null}>{children}</Suspense>
+        </AuthProvider>
       </body>
     </html>
   );

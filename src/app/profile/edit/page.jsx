@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { updateProfile } from '@/lib/userApi';
-import { PLACEHOLDER_USER_ID } from '@/lib/placeholderUser';
 import ErrorBanner from '@/components/wishlist/ErrorBanner';
+import AuthGuard from '@/components/AuthGuard';
+import { useAuth } from '@/context/AuthContext';
 
 export default function EditProfilePage() {
+  const { user } = useAuth();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -18,7 +20,7 @@ export default function EditProfilePage() {
     setError(null);
     setSuccess(false);
     try {
-      await updateProfile(PLACEHOLDER_USER_ID, { displayName, email });
+      await updateProfile(user?._id, { displayName, email });
       setSuccess(true);
     } catch (err) {
       setError(err.message);
@@ -28,6 +30,7 @@ export default function EditProfilePage() {
   }
 
   return (
+    <AuthGuard>
     <main className="mx-auto max-w-md px-4 py-8 space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-red-800 dark:text-red-200">Update Profile</h1>
@@ -80,5 +83,6 @@ export default function EditProfilePage() {
         </button>
       </form>
     </main>
+    </AuthGuard>
   );
 }
