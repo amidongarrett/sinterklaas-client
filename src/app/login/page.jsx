@@ -9,7 +9,8 @@ export default function LoginPage() {
   const router = useRouter();
   const { setUser } = useAuth();
 
-  const [step, setStep] = useState('email'); // 'email' | 'name' | 'otp'
+  const [step, setStep] = useState('email'); // 'email' | 'otp'
+  const [showNameField, setShowNameField] = useState(false);
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [userId, setUserId] = useState('');
@@ -23,6 +24,24 @@ export default function LoginPage() {
       setError('Please enter your email address.');
       return;
     }
+    if (showNameField) {
+      if (!displayName.trim()) {
+        setError('Please enter your display name.');
+        return;
+      }
+      setError('');
+      setSubmitting(true);
+      try {
+        const data = await requestOtp({ email: email.trim(), displayName: displayName.trim() });
+        setUserId(data.userId);
+        setStep('otp');
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
     setError('');
     setSubmitting(true);
     try {
@@ -30,31 +49,12 @@ export default function LoginPage() {
       setUserId(data.userId);
       setStep('otp');
     } catch (err) {
-      // If the backend says no account + needs a display name, move to name step
+      // If the backend says no account + needs a display name, reveal inline name field
       if (err.status === 404 && err.message.includes('displayName')) {
-        setStep('name');
+        setShowNameField(true);
       } else {
         setError(err.message);
       }
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  async function handleNameSubmit(e) {
-    e.preventDefault();
-    if (!displayName.trim()) {
-      setError('Please enter your display name.');
-      return;
-    }
-    setError('');
-    setSubmitting(true);
-    try {
-      const data = await requestOtp({ email: email.trim(), displayName: displayName.trim() });
-      setUserId(data.userId);
-      setStep('otp');
-    } catch (err) {
-      setError(err.message);
     } finally {
       setSubmitting(false);
     }
@@ -104,8 +104,8 @@ export default function LoginPage() {
             Sinterklaas Wishlist
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {step === 'email' && 'Sign in or create an account'}
-            {step === 'name' && 'Create your account'}
+            {step === 'email' && !showNameField && 'Sign in or create an account'}
+            {step === 'email' && showNameField && 'Create your account'}
             {step === 'otp' && 'Check your email'}
           </p>
         </div>
@@ -124,49 +124,41 @@ export default function LoginPage() {
               autoComplete="email"
               className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
+            {showNameField && (
+              <>
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="displayName">
+                  Display name
+                </label>
+                <input
+                  id="displayName"
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => { setDisplayName(e.target.value); setError(''); }}
+                  placeholder="Your name"
+                  autoComplete="name"
+                  className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </>
+            )}
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
               className="w-full rounded-lg bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 text-white font-semibold py-2.5 transition-colors"
             >
-              {submitting ? 'Sending…' : 'Continue'}
+              {submitting
+                ? (showNameField ? 'Creating account…' : 'Sending…')
+                : (showNameField ? 'Create account & send code' : 'Continue')}
             </button>
-          </form>
-        )}
-
-        {step === 'name' && (
-          <form onSubmit={handleNameSubmit} className="w-full flex flex-col gap-3">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              No account found for <span className="font-medium text-zinc-800 dark:text-zinc-200">{email}</span>. Enter a display name to create one.
-            </p>
-            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="displayName">
-              Display name
-            </label>
-            <input
-              id="displayName"
-              type="text"
-              value={displayName}
-              onChange={(e) => { setDisplayName(e.target.value); setError(''); }}
-              placeholder="Your name"
-              autoComplete="name"
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full rounded-lg bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 text-white font-semibold py-2.5 transition-colors"
-            >
-              {submitting ? 'Creating account…' : 'Create account & send code'}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setStep('email'); setError(''); }}
-              className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 underline self-center"
-            >
-              Use a different email
-            </button>
+            {showNameField && (
+              <button
+                type="button"
+                onClick={() => { setShowNameField(false); setDisplayName(''); setError(''); }}
+                className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 underline self-center"
+              >
+                Use a different email
+              </button>
+            )}
           </form>
         )}
 
